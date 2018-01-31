@@ -1,3 +1,4 @@
 ssh-bastion-*
 ssh-log-server
 data/*
+ssh-bastion

@@ -1,6 +1,7 @@
 global:
     ## Display a message of the day to all users, path to plain text file with unix line endings.
     motd_path:      "data/motd"
+    log_host:       "syslog:6514"
     ## Path of directory with which to store all session logs (auth logs go via syslog to /var/log/auth.log or /var/log/secure).
     log_path:       "data/logs"
     ## Array of private keys to identify the server, one per algorithm.

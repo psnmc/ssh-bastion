@@ -32,9 +32,16 @@ func main() {
         panic(err)
     }
 
-    authLogger, err = syslog.New(syslog.LOG_AUTH | syslog.LOG_ALERT, "ssh-bastion")
-    if err != nil {
-        panic(err)
+    if len(config.Global.LogHost) > 0 {
+        authLogger, err = syslog.Dial(config.Global.LogNetwork, config.Global.LogHost, syslog.LOG_AUTH | syslog.LOG_ALERT, "ssh-bastion")
+        if err != nil {
+            panic(err)
+        }
+    } else {
+        authLogger, err = syslog.New(syslog.LOG_AUTH | syslog.LOG_ALERT, "ssh-bastion")
+        if err != nil {
+            panic(err)
+        }
     }
 
     s, err := NewSSHServer()
