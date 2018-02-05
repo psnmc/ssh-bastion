@@ -6,12 +6,12 @@ import (
     "log"
     "strings"
     "io/ioutil"
-    "log/syslog"
+//    "log/syslog"
     "github.com/jessevdk/go-flags"
 )
 
 var config *SSHConfig
-var authLogger *syslog.Writer
+//var authLogger *syslog.Writer
 
 var opts struct {
     Config      string      `short:"c" long:"config" description:"Configuration YAML file location" required:"true"`
@@ -32,17 +32,17 @@ func main() {
         panic(err)
     }
 
-    if len(config.Global.LogHost) > 0 {
-        authLogger, err = syslog.Dial(config.Global.LogNetwork, config.Global.LogHost, syslog.LOG_AUTH | syslog.LOG_ALERT, "ssh-bastion")
-        if err != nil {
-            panic(err)
-        }
-    } else {
-        authLogger, err = syslog.New(syslog.LOG_AUTH | syslog.LOG_ALERT, "ssh-bastion")
-        if err != nil {
-            panic(err)
-        }
-    }
+//    if len(config.Global.LogHost) > 0 {
+//        authLogger, err = syslog.Dial(config.Global.LogNetwork, config.Global.LogHost, syslog.LOG_AUTH | syslog.LOG_ALERT, "ssh-bastion")
+//        if err != nil {
+//            panic(err)
+//        }
+//    } else {
+//        authLogger, err = syslog.New(syslog.LOG_AUTH | syslog.LOG_ALERT, "ssh-bastion")
+//        if err != nil {
+//            panic(err)
+//        }
+//    }
 
     s, err := NewSSHServer()
     if err != nil {
@@ -67,5 +67,6 @@ func GetMOTD() (string) {
 }
 
 func WriteAuthLog(format string, v ...interface{}) {
-    authLogger.Write([]byte(fmt.Sprintf(format, v...)))
+//    authLogger.Write([]byte(fmt.Sprintf(format, v...)))
+    log.Print([]byte(fmt.Sprintf(format, v...)))
 }
