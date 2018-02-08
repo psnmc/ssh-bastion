@@ -3,6 +3,7 @@ package main
 import (
     "os"
     "io"
+    "bufio"
     "fmt"
     "time"
     "sync"
@@ -16,6 +17,7 @@ type LogChannel struct {
     StartTime           time.Time
     UserName            string
     SessionId           string
+    Line                int64
     ActualChannel       ssh.Channel
     fd                  *os.File
     fd_ttyrec           *os.File
@@ -41,6 +43,7 @@ func NewLogChannel(startTime time.Time, channel ssh.Channel, username string) *L
         StartTime:      startTime,
         UserName:       username,
         SessionId:      fmt.Sprintf("%s:%d", username, time.Now().UTC().Unix()),
+        Line:           0,
         ActualChannel:  channel,
         initialBuffer:  bytes.NewBuffer([]byte{}),
         ttyrecBuffer:   bytes.NewBuffer([]byte{}),
@@ -114,7 +117,12 @@ func (l *LogChannel) Write(data []byte) (int, error) {
         } else {
             l.initialBuffer.Write(data)
         }
-	WriteAuthLog("%s: %s", l.SessionId, data)
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+        scanner.Split(bufio.ScanLines)
+        for scanner.Scan() {
+            l.Line += 1
+    	    WriteAuthLog("%s:%d: %s", l.SessionId, l.Line, scanner.Text())
+        }
         if l.fd_ttyrec != nil {
             writeTTYRecHeader(l.fd_ttyrec, len(data))
             l.fd_ttyrec.Write(data)
