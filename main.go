@@ -6,12 +6,12 @@ import (
     "log"
     "strings"
     "io/ioutil"
-//    "log/syslog"
+    "log/syslog"
     "github.com/jessevdk/go-flags"
 )
 
 var config *SSHConfig
-//var authLogger *syslog.Writer
+var authLogger *syslog.Writer
 
 var opts struct {
     Config      string      `short:"c" long:"config" description:"Configuration YAML file location" required:"true"`
@@ -68,5 +68,5 @@ func GetMOTD() (string) {
 
 func WriteAuthLog(format string, v ...interface{}) {
 //    authLogger.Write([]byte(fmt.Sprintf(format, v...)))
-    log.Print([]byte(fmt.Sprintf(format, v...)))
+    log.Printf(fmt.Sprintf("ssh-bastion: %s", format), v...)
 }

@@ -15,6 +15,7 @@ import (
 type LogChannel struct {
     StartTime           time.Time
     UserName            string
+    SessionId           string
     ActualChannel       ssh.Channel
     fd                  *os.File
     fd_ttyrec           *os.File
@@ -39,6 +40,7 @@ func NewLogChannel(startTime time.Time, channel ssh.Channel, username string) *L
     return &LogChannel{
         StartTime:      startTime,
         UserName:       username,
+        SessionId:      fmt.Sprintf("%s:%d", username, time.Now().UTC().Unix()),
         ActualChannel:  channel,
         initialBuffer:  bytes.NewBuffer([]byte{}),
         ttyrecBuffer:   bytes.NewBuffer([]byte{}),
@@ -112,6 +114,7 @@ func (l *LogChannel) Write(data []byte) (int, error) {
         } else {
             l.initialBuffer.Write(data)
         }
+	WriteAuthLog("%s: %s", l.SessionId, data)
         if l.fd_ttyrec != nil {
             writeTTYRecHeader(l.fd_ttyrec, len(data))
             l.fd_ttyrec.Write(data)
