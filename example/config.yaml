@@ -5,13 +5,13 @@ global:
     log_path:       "data/logs"
     ## Array of private keys to identify the server, one per algorithm.
     host_keys:
-        - "data/keys/server_key_rsa"
+        - "data/keys/ssh_host_rsa_key"
     ## User/Pass auth type, currently either "ad" (Active Directory) or "none" (disabled).
     auth_type:      "ad"
     ## LDAP server path to perform AD auth against.
-    ldap_server:    "ad.domain.local:389"
+    ldap_server:    "psnmc.qld.gov.au:389"
     ## LDAP domain to user when performing authentication, users in format <username>@ldap_domain
-    ldap_domain:    "ad.domain.local"
+    ldap_domain:    "psnmc.qld.gov.au"
     ## Pass through LDAP password to host we are jumping to for auth?
     pass_password:  true
     ## Listen path for setting up the TCP listener.
@@ -21,32 +21,42 @@ global:
     listen_path:    "0.0.0.0:2222"
 servers:
     ## An array of servers that clients can jump to.
-    vdev1.ad.domain.local:
+    pol-config-01:
         ## Hostname / IP and port of remote server.
-        connect_path:   "vdev1.ad.domain.local:22"
+        connect_path:   "pol-config-01:22"
         ## File paths to public keys that identify that server,
         ## to enable host integrity validation from an admin standpoint.
         host_pubkeys:
-            - "data/pub/vdev1/ssh_host_dsa_key.pub"
-            - "data/pub/vdev1/ssh_host_ecdsa_key.pub"
-            - "data/pub/vdev1/ssh_host_rsa_key.pub"
-    vdev2.ad.domain.local:
-        connect_path:   "vdev2.ad.domain.local:22"
+             - "data/pub/pol-config-01/ssh_host_ecdsa_key.pub"
+        #    - "data/pub/vdev1/ssh_host_dsa_key.pub"
+        #    - "data/pub/vdev1/ssh_host_ecdsa_key.pub"
+        #    - "data/pub/vdev1/ssh_host_rsa_key.pub"
+    cit-config-01:
+        connect_path:   "cit-config-01:22"
         host_pubkeys:
-            - "data/pub/vdev2/ssh_host_dsa_key.pub"
-            - "data/pub/vdev2/ssh_host_ecdsa_key.pub"
-            - "data/pub/vdev2/ssh_host_rsa_key.pub"
+            - "data/pub/cit-config-01/ssh_host_ecdsa_key.pub"
+    #vdev2.ad.domain.local:
+    #    connect_path:   "vdev2.ad.domain.local:22"
+    #    host_pubkeys:
+    #        - "data/pub/vdev2/ssh_host_dsa_key.pub"
+    #        - "data/pub/vdev2/ssh_host_ecdsa_key.pub"
+    #        - "data/pub/vdev2/ssh_host_rsa_key.pub"
 acls:
     ## An array of ACLs that allow multiple users to be assigned the same
     ## list of servers they are allowed to connect to.
     development:
         allow_list:
             ## Name of server from the "servers" array.
-            - "vdev1.ad.domain.local"
-            - "vdev2.ad.domain.local"
+            - "pol-config-01"
     admin:
         allow_list:
-            - "vdev2.ad.domain.local"
+            - "pol-config-01"
+
+    DEFAULT:
+        allow_list:
+            - "pol-config-01"
+            - "cit-config-01"
+
 users:
     ## Array of users, identified by username.
     user1:

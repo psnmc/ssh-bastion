@@ -1,3 +1,5 @@
-ssh-bastion-*
+ssh-bastion*
 ssh-log-server
 data/*
+pkg/
+src/

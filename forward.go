@@ -76,35 +76,34 @@ func (s *SSHServer) SessionForward(startTime time.Time, sshConn *ssh.ServerConn,
 
     var remote SSHConfigServer
     var remote_name string
+    var useracl string = "DEFAULT"
 
-    if user, ok := config.Users[sshConn.User()]; ! ok {
-        fmt.Fprintf(sesschan, "User has no permitted remote hosts.\r\n")
+    if user, ok := config.Users[sshConn.User()]; ok {
+        useracl = user.ACL
+    }
+    if acl, ok := config.ACLs[useracl]; ! ok {
+        fmt.Fprintf(sesschan, "Error processing server selection (Invalid ACL).\r\n")
+        log.Printf("Invalid ACL detected for user %s.", sshConn.User())
         sesschan.Close()
         return
     } else {
-        if acl, ok := config.ACLs[user.ACL]; ! ok {
-            fmt.Fprintf(sesschan, "Error processing server selection (Invalid ACL).\r\n")
-            log.Printf("Invalid ACL detected for user %s.", sshConn.User())
+        svr, err := InteractiveSelection(sesschan, "Please choose from the following servers:", acl.AllowedServers)
+        if err != nil {
+            fmt.Fprintf(sesschan, "Error processing server selection.\r\n")
+            sesschan.Close()
+            return
+        }
+
+        if server, ok := config.Servers[svr]; ! ok {
+            fmt.Fprintf(sesschan, "Incorrectly Configured Server Selected.\r\n")
             sesschan.Close()
             return
         } else {
-            svr, err := InteractiveSelection(sesschan, "Please choose from the following servers:", acl.AllowedServers)
-            if err != nil {
-                fmt.Fprintf(sesschan, "Error processing server selection.\r\n")
-                sesschan.Close()
-                return
-            }
-
-            if server, ok := config.Servers[svr]; ! ok {
-                fmt.Fprintf(sesschan, "Incorrectly Configured Server Selected.\r\n")
-                sesschan.Close()
-                return
-            } else {
-                remote_name = svr
-                remote = server
-            }
+            remote_name = svr
+            remote = server
         }
     }
+
 
     err = sesschan.SyncToFile(remote_name)
     if err != nil {
