@@ -52,7 +52,7 @@ pipeline {
 
         stage('Save Output') {
             steps {
-                archiveArtifacts artifacts: "$GOPATH/src/ssh-bastion/ssh-bastion"
+                archiveArtifacts artifacts: "src/ssh-bastion/ssh-bastion"
             }
         }
     }
