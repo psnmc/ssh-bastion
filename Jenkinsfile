@@ -27,10 +27,11 @@ pipeline {
 
         stage('Pre Build') {
             steps {
-                dir("${GOPATH}/src") {
+                dir("${GOPATH}") {
                     sh 'echo Workspace: $WORKSPACE'
                     sh 'echo GOPATH: $GOPATH'
                     sh 'go version'
+                    sh 'go get -u github.com/golang/dep/cmd/dep'
                     sh 'ls'
                 }
             }
@@ -39,6 +40,9 @@ pipeline {
         stage('Build') {
             steps {
                 dir("${GOPATH}/src/ssh-bastion") {
+                    echo 'Checking dependencies'
+                    echo '========================================='
+                    sh 'dep ensure'
                     echo 'Compiling go...'
                     echo '========================================='
                     sh """go build -ldflags '-s'"""
