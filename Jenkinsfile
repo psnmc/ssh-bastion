@@ -14,20 +14,26 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                script {
-                    if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
-                        sh """curl -X PUT -d '"building"' https://psnmc-jenkins.firebaseio.com/ssh-bastion-${BRANCH_NAME}.json?auth=6CrNwVrQlzgpdhysYrwRXEZ5WsJQXZy046qYpNoM"""
+                mkdir(dir:"${GOPATH}/src")
+                dir("${GOPATH}/src") {
+                    script {
+                        if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
+                            sh """curl -X PUT -d '"building"' https://psnmc-jenkins.firebaseio.com/ssh-bastion-${BRANCH_NAME}.json?auth=6CrNwVrQlzgpdhysYrwRXEZ5WsJQXZy046qYpNoM"""
+                        }
                     }
+                    checkout scm
                 }
-                checkout scm
             }
         }
 
         stage('Pre Build') {
             steps {
-                sh 'echo Workspace: $WORKSPACE'
-                sh 'echo GOPATH: $GOPATH'
-                sh 'go version'
+                dir("${GOPATH}/src") {
+                    sh 'echo Workspace: $WORKSPACE'
+                    sh 'echo GOPATH: $GOPATH'
+                    sh 'go version'
+                    sh 'ls'
+                }
             }
         }
 
@@ -49,10 +55,10 @@ pipeline {
     post {
         failure {
             script {
-                if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
-                    slackSend ":poop: Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
-                    sh """curl -X PUT -d '"failure"' https://psnmc-jenkins.firebaseio.com/ssh-bastion-${BRANCH_NAME}.json?auth=6CrNwVrQlzgpdhysYrwRXEZ5WsJQXZy046qYpNoM"""
-                }
+                // if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
+                //     slackSend ":poop: Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+                //     sh """curl -X PUT -d '"failure"' https://psnmc-jenkins.firebaseio.com/ssh-bastion-${BRANCH_NAME}.json?auth=6CrNwVrQlzgpdhysYrwRXEZ5WsJQXZy046qYpNoM"""
+                // }
             }
         }
 
