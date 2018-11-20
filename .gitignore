@@ -3,3 +3,4 @@ ssh-log-server
 data/*
 pkg/
 src/
+vendor/
