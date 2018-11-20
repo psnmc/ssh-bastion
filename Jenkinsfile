@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                dir("${GOPATH}/src") {
+                dir("${GOPATH}/src/ssh-bastion") {
                     script {
                         if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
                             sh """curl -X PUT -d '"building"' https://psnmc-jenkins.firebaseio.com/ssh-bastion-${BRANCH_NAME}.json?auth=6CrNwVrQlzgpdhysYrwRXEZ5WsJQXZy046qYpNoM"""
@@ -38,9 +38,11 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo 'Compiling go...'
-                echo '========================================='
-                sh """cd $GOPATH/src/ssh-bastion && go build -ldflags '-s'"""
+                dir("${GOPATH}/src/ssh-bastion") {
+                    echo 'Compiling go...'
+                    echo '========================================='
+                    sh """go build -ldflags '-s'"""
+                }
             }
         }
 
@@ -69,8 +71,8 @@ pipeline {
             }
         }
 
-        always {
-            cleanWs()
-        }
+        // always {
+        //     cleanWs()
+        // }
     }
 }
