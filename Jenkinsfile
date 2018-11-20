@@ -7,12 +7,11 @@ pipeline {
         // Proxy
         http_proxy = 'http://proxy.psnmc.qld.gov.au:3128'
         https_proxy = 'http://proxy.psnmc.qld.gov.au:3128'
+        GOPATH="${WORKSPACE}"
+        PATH="${GOPATH}/bin:$PATH"
     }
 
     stages {
-        env.GOPATH="${WORKSPACE}"
-        env.PATH="${GOPATH}/bin:$PATH"
-
         stage('Checkout') {
             script {
                 if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
@@ -23,6 +22,8 @@ pipeline {
         }
 
         stage('Pre Build') {
+            sh 'echo Workspace: $WORKSPACE'
+            sh 'echo GOPATH: $GOPATH'
             sh 'go version'
         }
 
