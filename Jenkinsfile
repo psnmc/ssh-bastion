@@ -13,18 +13,22 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            script {
-                if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
-                    sh """curl -X PUT -d '"building"' https://psnmc-jenkins.firebaseio.com/ssh-bastion-${BRANCH_NAME}.json?auth=6CrNwVrQlzgpdhysYrwRXEZ5WsJQXZy046qYpNoM"""
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
+                        sh """curl -X PUT -d '"building"' https://psnmc-jenkins.firebaseio.com/ssh-bastion-${BRANCH_NAME}.json?auth=6CrNwVrQlzgpdhysYrwRXEZ5WsJQXZy046qYpNoM"""
+                    }
                 }
+                checkout scm
             }
-            checkout scm
         }
 
         stage('Pre Build') {
-            sh 'echo Workspace: $WORKSPACE'
-            sh 'echo GOPATH: $GOPATH'
-            sh 'go version'
+            steps {
+                sh 'echo Workspace: $WORKSPACE'
+                sh 'echo GOPATH: $GOPATH'
+                sh 'go version'
+            }
         }
 
         stage('Build') {
