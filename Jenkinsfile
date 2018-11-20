@@ -7,40 +7,36 @@ pipeline {
         // Proxy
         http_proxy = 'http://proxy.psnmc.qld.gov.au:3128'
         https_proxy = 'http://proxy.psnmc.qld.gov.au:3128'
-        GOPATH = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"
     }
 
-    ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/") {
-        withEnv(["GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"]) {
-            stages {
-                env.PATH="${GOPATH}/bin:$PATH"
+    stages {
+        env.GOPATH="${WORKSPACE}"
+        env.PATH="${GOPATH}/bin:$PATH"
 
-                stage('Checkout') {
-                    script {
-                        if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
-                            sh """curl -X PUT -d '"building"' https://psnmc-jenkins.firebaseio.com/ssh-bastion-${BRANCH_NAME}.json?auth=6CrNwVrQlzgpdhysYrwRXEZ5WsJQXZy046qYpNoM"""
-                        }
-                    }
-                    checkout scm
+        stage('Checkout') {
+            script {
+                if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
+                    sh """curl -X PUT -d '"building"' https://psnmc-jenkins.firebaseio.com/ssh-bastion-${BRANCH_NAME}.json?auth=6CrNwVrQlzgpdhysYrwRXEZ5WsJQXZy046qYpNoM"""
                 }
+            }
+            checkout scm
+        }
 
-                stage('Pre Build') {
-                    sh 'go version'
-                }
+        stage('Pre Build') {
+            sh 'go version'
+        }
 
-                stage('Build') {
-                    steps {
-                        echo 'Compiling go...'
-                        echo '========================================='
-                        sh """cd $GOPATH/src/ssh-bastion && go build -ldflags '-s'"""
-                    }
-                }
+        stage('Build') {
+            steps {
+                echo 'Compiling go...'
+                echo '========================================='
+                sh """cd $GOPATH/src/ssh-bastion && go build -ldflags '-s'"""
+            }
+        }
 
-                stage('Save Output') {
-                    steps {
-                        archiveArtifacts artifacts: "$GOPATH/src/ssh-bastion/ssh-bastion"
-                    }
-                }
+        stage('Save Output') {
+            steps {
+                archiveArtifacts artifacts: "$GOPATH/src/ssh-bastion/ssh-bastion"
             }
         }
     }
