@@ -53,14 +53,14 @@ pipeline {
     }
 
     post {
-        failure {
-            script {
-                // if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
-                //     slackSend ":poop: Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
-                //     sh """curl -X PUT -d '"failure"' https://psnmc-jenkins.firebaseio.com/ssh-bastion-${BRANCH_NAME}.json?auth=6CrNwVrQlzgpdhysYrwRXEZ5WsJQXZy046qYpNoM"""
-                // }
-            }
-        }
+        // failure {
+        //     script {
+        //         if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
+        //             slackSend ":poop: Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        //             sh """curl -X PUT -d '"failure"' https://psnmc-jenkins.firebaseio.com/ssh-bastion-${BRANCH_NAME}.json?auth=6CrNwVrQlzgpdhysYrwRXEZ5WsJQXZy046qYpNoM"""
+        //         }
+        //     }
+        // }
 
         success {
             script {
