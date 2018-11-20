@@ -14,7 +14,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                mkdir(dir:"${GOPATH}/src")
                 dir("${GOPATH}/src") {
                     script {
                         if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'master') {
