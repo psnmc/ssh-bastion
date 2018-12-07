@@ -10,6 +10,14 @@
   version = "v1.4.0"
 
 [[projects]]
+  digest = "1:e30ac47ee84d7d354e0a284cf742e3015400667e90aa3d6ae99c7a55da67c645"
+  name = "github.com/kennygrant/sanitize"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "06ec0d0dbcd497d01e5189b16f5263f712e61a8e"
+  version = "v1.2.4"
+
+[[projects]]
   branch = "master"
   digest = "1:5ec3c1981936ef423dfb548830dae2e52220c9aea5859bdcd4437b25179bcb6d"
   name = "github.com/mmitton/asn1-ber"
@@ -45,6 +53,17 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:1a1ecfa7b54ca3f7a0115ab5c578d7d6a5d8b605839c549e80260468c42f8be7"
+  name = "golang.org/x/net"
+  packages = [
+    "html",
+    "html/atom",
+  ]
+  pruneopts = "UT"
+  revision = "351d144fa1fc0bd934e2408202be0c29f25e35a0"
+
+[[projects]]
+  branch = "master"
   digest = "1:48b757e61d662021f49a6a0afc67dacae27ee0c3a8f858d927126bcdf49222d3"
   name = "golang.org/x/sys"
   packages = [
@@ -67,6 +86,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/jessevdk/go-flags",
+    "github.com/kennygrant/sanitize",
     "github.com/tonnerre/go-ldap",
     "golang.org/x/crypto/ssh",
     "golang.org/x/crypto/ssh/agent",

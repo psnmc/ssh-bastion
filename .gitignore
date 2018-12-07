@@ -4,3 +4,4 @@ data/*
 pkg/
 src/
 vendor/
+test.yaml
