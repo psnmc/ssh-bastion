@@ -62,6 +62,8 @@ func (l *LogChannel) SyncToFile(remote_name string, remote_user string) error {
 	}
 	filename := filepath + "/" + fmt.Sprintf("ssh_log_%s_%s_%s", l.StartTime.Format(time.RFC3339), l.UserName, remote_name)
 
+	WriteAuthLog("Session logs: %s", filename)
+
 	l.logMutex.Lock()
 
 	l.fd, err = os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0640)
