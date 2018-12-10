@@ -71,7 +71,7 @@ func GetMOTD() string {
 }
 
 func WriteAuthLog(format string, v ...interface{}) {
-	format = "ssh-bastion: " + format
+	format = fmt.Sprintf("%s: ", config.Global.LogFacility) + format
 	if authLogger != nil {
 		authLogger.Write([]byte(fmt.Sprintf(format, v...)))
 	} else {

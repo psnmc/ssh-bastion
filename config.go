@@ -18,6 +18,7 @@ type SSHConfigGlobal struct {
 	MOTDPath     string   `yaml:"motd_path"`
 	LogHost      string   `yaml:"log_host"`
 	LogNetwork   string   `yaml:"log_network"`
+	LogFacility  string   `yaml:"log_facility"`
 	LogPath      string   `yaml:"log_path"`
 	HostKeyPaths []string `yaml:"host_keys"`
 	AuthType     string   `yaml:"auth_type"`
