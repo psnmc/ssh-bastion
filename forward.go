@@ -153,7 +153,7 @@ func (s *SSHServer) SessionForward(startTime time.Time, sshConn *ssh.ServerConn,
 		return
 	}
 
-	WriteAuthLog("Connecting to remote for relay (%s) by %s from %s.", remote.ConnectPath, sshConn.User(), sshConn.RemoteAddr())
+	WriteAuthLog("Connecting to remote for relay (%s) by %s(%s) from %s.", remote.ConnectPath, sshConn.User(), actualUser, sshConn.RemoteAddr())
 	fmt.Fprintf(sesschan, "Connecting to %s\r\n", remoteName)
 
 	var clientConfig *ssh.ClientConfig
@@ -191,7 +191,7 @@ func (s *SSHServer) SessionForward(startTime time.Time, sshConn *ssh.ServerConn,
 					return nil
 				}
 			}
-			WriteAuthLog("Host key validation failed for remote %s by user %s from %s.", remote.ConnectPath, sshConn.User(), remote_addr)
+			WriteAuthLog("Host key validation failed for remote %s by user %s(%s) from %s.", remote.ConnectPath, sshConn.User(), actualUser, remote_addr)
 			return fmt.Errorf("HOST KEY VALIDATION FAILED - POSSIBLE MITM BETWEEN RELAY AND REMOTE")
 		},
 	}
@@ -233,8 +233,8 @@ func (s *SSHServer) SessionForward(startTime time.Time, sshConn *ssh.ServerConn,
 		sesschan.Close()
 		return
 	}
-	WriteAuthLog("Connected to remote for relay (%s) by %s from %s.", remote.ConnectPath, sshConn.User(), sshConn.RemoteAddr())
-	defer WriteAuthLog("Disconnected from remote for relay (%s) by %s from %s.", remote.ConnectPath, sshConn.User(), sshConn.RemoteAddr())
+	WriteAuthLog("Connected to remote for relay (%s) by %s(%s) from %s.", remote.ConnectPath, sshConn.User(), actualUser, sshConn.RemoteAddr())
+	defer WriteAuthLog("Disconnected from remote for relay (%s) by %s(%s) from %s.", remote.ConnectPath, sshConn.User(), actualUser, sshConn.RemoteAddr())
 
 	log.Printf("Starting session proxy...")
 	proxy(maskedReqs, reqs2, sesschan, channel2)
