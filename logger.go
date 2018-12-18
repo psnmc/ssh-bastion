@@ -2,12 +2,9 @@ package main
 
 import (
 	"bytes"
-	"encoding/binary"
 	"fmt"
-	"io"
 	"os"
 	"sync"
-	"syscall"
 	"time"
 
 	sanitize "github.com/kennygrant/sanitize"
@@ -19,23 +16,23 @@ type LogChannel struct {
 	UserName      string
 	ActualChannel ssh.Channel
 	fd            *os.File
-	fd_ttyrec     *os.File
+	// fd_ttyrec     *os.File
 	fd_req        *os.File
 	initialBuffer *bytes.Buffer
-	ttyrecBuffer  *bytes.Buffer
-	reqBuffer     *bytes.Buffer
-	logMutex      *sync.Mutex
+	// ttyrecBuffer  *bytes.Buffer
+	reqBuffer *bytes.Buffer
+	logMutex  *sync.Mutex
 }
 
-func writeTTYRecHeader(fd io.Writer, length int) {
-	t := time.Now()
+// func writeTTYRecHeader(fd io.Writer, length int) {
+// 	t := time.Now()
 
-	tv := syscall.NsecToTimeval(t.UnixNano())
+// 	tv := syscall.NsecToTimeval(t.UnixNano())
 
-	binary.Write(fd, binary.LittleEndian, int32(tv.Sec))
-	binary.Write(fd, binary.LittleEndian, int32(tv.Usec))
-	binary.Write(fd, binary.LittleEndian, int32(length))
-}
+// 	binary.Write(fd, binary.LittleEndian, int32(tv.Sec))
+// 	binary.Write(fd, binary.LittleEndian, int32(tv.Usec))
+// 	binary.Write(fd, binary.LittleEndian, int32(length))
+// }
 
 func NewLogChannel(startTime time.Time, channel ssh.Channel, username string) *LogChannel {
 	return &LogChannel{
@@ -43,9 +40,9 @@ func NewLogChannel(startTime time.Time, channel ssh.Channel, username string) *L
 		UserName:      username,
 		ActualChannel: channel,
 		initialBuffer: bytes.NewBuffer([]byte{}),
-		ttyrecBuffer:  bytes.NewBuffer([]byte{}),
-		reqBuffer:     bytes.NewBuffer([]byte{}),
-		logMutex:      &sync.Mutex{},
+		// ttyrecBuffer:  bytes.NewBuffer([]byte{}),
+		reqBuffer: bytes.NewBuffer([]byte{}),
+		logMutex:  &sync.Mutex{},
 	}
 }
 
@@ -78,17 +75,17 @@ func (l *LogChannel) SyncToFile(remote_name string, remote_user string) error {
 	l.initialBuffer.Reset()
 	l.initialBuffer = nil
 
-	l.fd_ttyrec, err = os.OpenFile(filename+".ttyrec", os.O_WRONLY|os.O_CREATE, 0640)
-	if err != nil {
-		return err
-	}
+	// l.fd_ttyrec, err = os.OpenFile(filename+".ttyrec", os.O_WRONLY|os.O_CREATE, 0640)
+	// if err != nil {
+	// 	return err
+	// }
 
-	_, err = l.ttyrecBuffer.WriteTo(l.fd_ttyrec)
-	if err != nil {
-		return err
-	}
-	l.ttyrecBuffer.Reset()
-	l.ttyrecBuffer = nil
+	// _, err = l.ttyrecBuffer.WriteTo(l.fd_ttyrec)
+	// if err != nil {
+	// 	return err
+	// }
+	// l.ttyrecBuffer.Reset()
+	// l.ttyrecBuffer = nil
 
 	l.fd_req, err = os.OpenFile(filename+".req", os.O_WRONLY|os.O_CREATE, 0640)
 	if err != nil {
@@ -119,13 +116,13 @@ func (l *LogChannel) Write(data []byte) (int, error) {
 		} else {
 			l.initialBuffer.Write(data)
 		}
-		if l.fd_ttyrec != nil {
-			writeTTYRecHeader(l.fd_ttyrec, len(data))
-			l.fd_ttyrec.Write(data)
-		} else {
-			writeTTYRecHeader(l.ttyrecBuffer, len(data))
-			l.ttyrecBuffer.Write(data)
-		}
+		// if l.fd_ttyrec != nil {
+		// 	writeTTYRecHeader(l.fd_ttyrec, len(data))
+		// 	l.fd_ttyrec.Write(data)
+		// } else {
+		// 	writeTTYRecHeader(l.ttyrecBuffer, len(data))
+		// 	l.ttyrecBuffer.Write(data)
+		// }
 	}
 	l.logMutex.Unlock()
 
@@ -136,9 +133,9 @@ func (l *LogChannel) Close() error {
 	if l.fd != nil {
 		l.fd.Close()
 	}
-	if l.fd_ttyrec != nil {
-		l.fd_ttyrec.Close()
-	}
+	// if l.fd_ttyrec != nil {
+	// 	l.fd_ttyrec.Close()
+	// }
 	if l.fd_req != nil {
 		l.fd_req.Close()
 	}
